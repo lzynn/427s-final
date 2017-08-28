@@ -1,0 +1,37 @@
+1)
+prepre_job.jar
+driver: stubs.SwitchUserMovieDriver
+
+Perform job on both TrainingRatings.txt and TestingRatings.txt and name the resulting files TrainingRatingsUMR.txt and UserStatsDriver TestingRatingsUMR.txt (names will be used in distributed cache, has to be exact)
+
+2)
+prep_job.jar
+driver: stubs.prep_job_driver
+input: TrainingRatingsUMR.txt
+
+3)
+job1.jar
+driver: stubs.Job1Driver
+input: output of prep_job
+
+4)
+job2.jar
+driver: Alg1Job2_driver
+input: output of job1
+
+5)
+job3.jar
+driver: TopKDriver
+input: output of job2
+
+6) 
+stats.jar
+driver: UserStatsDriver
+input: TrainingRatingsUMR.txt
+
+7)
+job4.jar
+driver: ComputePredictionsDriver
+Distributed cache: TrainingRatingsUMR.txt,TestingRatingsUMR.txt,part-r-00000 (<- output file from step 6)
+*do not change file names
+input: output of job3 (step 5)

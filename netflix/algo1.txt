@@ -1,0 +1,41 @@
+ALGO 1
+Preprocessing
+prep_job_driver:
+input: TrainingRatings.txt 	
+	Key type: LongWritable (file offset)
+	Value type: Text	
+	format: (movie-id, user-id, rating)
+output: (movie-id, (user-id, rating, numRatings, sumRatings)
+	Key type: IntWritable
+	Value type: Text
+jar: prepseq.jar
+driver: stubs.prep_job_driver
+command line: input_dir output_dir
+*output value contains comma-separated stats
+*output is snappy codec compressed sequence file
+
+Job 1:
+input: output of prep_job. 
+	Key type: IntWritable
+	Value type: Text
+	Format: (movie-id, (user-id, rating, numRatings, sumRatings)
+output: ((user-a, user-b), (ratingB, numRatingsA, sumRatingsA, ratingB, numRatingsB, sumRatingsB))
+	Key type: Text
+	Value type: Text
+jar: job1seq.jar
+driver: stubs.Job1Driver
+command line: input_dir output_dir
+*output is snappy codec compressed sequence file
+
+Job 2:
+input: output of job 1
+	Key type: Text
+	Value type: Text
+	Format: ((user-a, user-b), (ratingB, numRatingsA, sumRatingsA, ratingB, numRatingsB, sumRatingsB))
+output: ((user-a, user-b), similarity)
+	Key type: Text
+	Value type: DoubleWritable
+jar: job2seq.jar
+driver: stubs.Alg1Job2_driver
+command line: input_dir output_dir
+*output is snappy codec compressed sequence file
